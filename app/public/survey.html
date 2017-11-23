@@ -201,6 +201,23 @@
 				<i class="small right material-icons grey-text">mail</i>submit</a>
 		</div>
 </main>
+	<!-- Modal Structure -->
+	<div id="modal1" class="col s12 modal">
+		<div class="blue-grey darken-4 card-panel grey lighten-5 z-depth-">
+			<div class="row valign-wrapper">
+				<div class="col s7">
+					<img src="http://omgtoptens.com/wp-content/uploads/2012/09/albert-einstein-pic.jpg" alt="" class="circle responsive-img" id='modalImg'>
+				</div>
+				<div class="col s5">
+					<h2 id='modalName'>Hector</h2>
+					<span class="grey-text">
+						We found you a friend!
+					</span>
+				</div>
+
+			</div>
+		</div>
+	</div>
 
 <!--Footer-->
 	<footer class="page-footer blue-grey darken-4">
@@ -232,6 +249,9 @@
 	.dropdown-content{
 		background-color: #263238;
 	}
+	.card-panel{
+		margin: 0px;
+	}
 </style>
 
 <!-- jquery -->
@@ -242,10 +262,15 @@
 <script>
 	$(document).ready(function () {
 
+
 		//Side-nav
 		$(".button-collapse").sideNav();
+		//Carousel
 		$('.carousel.carousel-slider').carousel({fullWidth: true});
 		$('select').material_select();
+		//Modal
+		$('.modal').modal();
+
 		$(document).on('click', function(){
 			if($('#icon_prefix').val() !== '' && $('#cloud_upload').val() !== ''){
 				if($('#submitBtn').hasClass('disabled')){
@@ -257,34 +282,63 @@
 				}
 			}
 		});
+		//
+		const getMatch = (friends) =>{
+
+			return match;
+		};
 		$(document).on('click', '#submitBtn', function(){
 			event.preventDefault();
 
 			var friendData = {
-				name: ($('#icon_prefix').val()),
-				photo: ($('#cloud_upload').val()),
-				score: []
+				name: ($('#icon_prefix').val().trim()),
+				url: ($('#cloud_upload').val().trim()),
+				scores: []
 			};
 
 			$('select').each(function(){
-				friendData.score.push($(this).val());
+				points = parseFloat($(this).val());
+				friendData.scores.push(points);
 			});
-
-			let currentURL = window.location.origin;
-			// AJAX post the data to the friends API.
-			$.post(currentURL + "/api/friends", friendData, function(req, res){
-
-				// // Grab the result from the AJAX post so that the best match's name and photo are displayed.
-				// $("#matchName").text(data.name);
-				// $('#matchImg').attr("src", data.photo);
-        //
-				// // Show the modal with the best match
-				// $("#resultsModal").modal('toggle');
-				console.log('line283',res);
-				});
 			console.log(friendData);
-			$.post("/api/friends", friendData);
+			// AJAX post the data to the friends.js
+			$.post("/api/friends", friendData, function(res){
+
+					console.log(res);
+
+					// let match = null;
+					// let comparison = null;
+          //
+					// for(var i = 0; i < res.length; i++){
+					// 	console.log(res[i]);
+          //
+					//  	let tempMatch = 0;
+					//  	let scores = res[i].scores;
+          //
+					// 	console.log(scores);
+          //
+					// 	for(var j = 0; j < scores.length; j++){
+					// 		tempMatch += Math.abs( parseFloat(scores[j]) - friendData.scores[j]);
+					// 	}
+					// 	if(comparison === null){
+					// 		comparison = tempMatch;
+					// 		match = res[i];
+					// 	}else if (tempMatch < comparison){
+					// 		comparison = tempMatch;
+					// 		match = res[i];
+					// 	}
+					// }
+
+					displayModal(res);
+
+				});
 		});
+		function displayModal(friend){
+			console.log(friend);
+			$('#modalName').text(friend.name);
+			$('#modalImg').attr('src',friend.url);
+			$('#modal1').modal('open');
+		}
 	});
 
 </script>
